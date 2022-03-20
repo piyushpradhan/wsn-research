@@ -73,4 +73,5 @@ if __name__ == "__main__":
             pass
         if len(coord) == n: 
             break
-    print(find_forwarder({1,2,3,4,5}, s, d, r, coord))
+    forwarder = find_forwarder({1,2,3,4,5}, s, d, r, coord)
+    # print(find_forwarder({1,2,3,4,5}, s, d, r, coord))
