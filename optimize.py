@@ -24,13 +24,24 @@ import random
 from wrt_polygon import *
 from forward_zone_coord import *
 
-def gen_coord(): 
+def gen_coord(s, d): 
     """
     Generate random coordinates which represent
     the location of sensor nodes scattered around
     """
-    x = random.uniform(0, 9)
-    y = random.uniform(0, 9)
+    smallest_x = s[0]
+    greatest_x = d[0]
+    smallest_y = s[1]
+    greatest_y = d[1]
+    if s[0] > d[0]: 
+        smallest_x = d[0]
+        greatest_x = s[0]
+    if s[1] > d[1]: 
+        smallest_y = d[1]
+        greatest_y = s[1]
+
+    x = random.uniform(smallest_x, greatest_x)
+    y = random.uniform(greatest_x, greatest_y)
     return (int(x), int(y))
 
 def calc_dist(x, y): 
@@ -46,16 +57,20 @@ def find_forwarder(s, d, r, coord, forward_zone):
     forwarder_list = []
     forwarder_node = ""
     for i in coord: 
-        if inside_polygon(forward_zone, i) and calc_dist(i, d) < calc_dist(s, d): 
-            print("This is good")
-        # calc_dist(s, i) causing problems
         if calc_dist(s, i) <= r and (calc_dist(i, d) < calc_dist(s, d)) and inside_polygon(forward_zone, i):
             forwarder_list.append(i)
-    if d in forwarder_list or len(forwarder_list) == 0:
+    print("source: " + str(s))
+    print("forwarder list: ", end="")
+    print(forwarder_list)
+    if d in forwarder_list: 
         forwarder_node = d
+        print("d present: ", end="")
+        print(forwarder_node)
     else: 
         # this case is not getting called
         forwarder_node = random.choice(forwarder_list)
+        print("random: ", end="")
+        print(forwarder_node)
     return forwarder_node
 
 def chromosome_form(s, d, r, coord, forward_zone):
@@ -82,20 +97,22 @@ def population_form(s, d, r, coord, p, forward_zone):
 
 if __name__ == "__main__": 
     n = 80
-    s = [1, 3]
-    d = [56, 78]
-    r = 2
+    s = (1, 3)
+    d = (23, 32)
+    r = 20
     coord = []
     while True:
         if len(coord) == n: 
             break
-        new_coord = gen_coord()
+        new_coord = gen_coord(s, d)
         if new_coord not in coord:
-            coord.append(gen_coord())
+            coord.append(gen_coord(s, d))
         else:
             pass
+    print(coord)
     forward_zone = point_of_intersection(r, s, d)
-    forwarder = find_forwarder(s, d, r, coord, forward_zone)
+    print(forward_zone)
+    # forwarder = find_forwarder(s, d, r, coord, forward_zone)
     chromosome_path = chromosome_form(s, d, r, coord, forward_zone)
-    population = population_form(s, d, r, coord, 10, forward_zone)
+    # population = population_form(s, d, r, coord, 10, forward_zone)
     print(chromosome_path)

@@ -18,7 +18,7 @@ def perpendicular_diameter(m, b, s, d):
     return m, bs, bd
 
 def point_of_intersection(r, s, d):
-    """
+    """ 
     Returns the point of intersection of the line with equation y = mx + b.
     """
     # defining the source and destination circles 
@@ -35,7 +35,7 @@ def point_of_intersection(r, s, d):
     d2 = right_half.boundary.geoms[0]
 
     s1 = left_half.boundary.geoms[0]
-    s2 = left_half.boundary.geoms[1]
+    s2 = right_half.boundary.geoms[1]
     
     print("Line passing through D")
     print(left_half.boundary.geoms[1].x, left_half.boundary.geoms[1].y)
