@@ -37,13 +37,13 @@ def point_of_intersection(r, s, d):
     s1 = left_half.boundary.geoms[0]
     s2 = right_half.boundary.geoms[1]
     
-    print("Line passing through D")
-    print(left_half.boundary.geoms[1].x, left_half.boundary.geoms[1].y)
-    print(right_half.boundary.geoms[0].x, right_half.boundary.geoms[0].y)
+    # print("Line passing through D")
+    # print(left_half.boundary.geoms[1].x, left_half.boundary.geoms[1].y)
+    # print(right_half.boundary.geoms[0].x, right_half.boundary.geoms[0].y)
 
-    print("Line passing through S")
-    print(left_half.boundary.geoms[0].x, left_half.boundary.geoms[0].y)
-    print(right_half.boundary.geoms[1].x, right_half.boundary.geoms[1].y)
+    # print("Line passing through S")
+    # print(left_half.boundary.geoms[0].x, left_half.boundary.geoms[0].y)
+    # print(right_half.boundary.geoms[1].x, right_half.boundary.geoms[1].y)
 
     forward_zone = []
     forward_zone.append((s1.x, s1.y))
