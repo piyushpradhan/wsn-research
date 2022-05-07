@@ -24,12 +24,6 @@ import random
 from wrt_polygon import *
 from forward_zone_coord import *
 
-def check_forward_zone(s, d, r, n, i): 
-    """
-    Check if the node is inside the forward zone
-    """
-    pass
-
 def gen_coord(): 
     """
     Generate random coordinates which represent
@@ -45,49 +39,51 @@ def calc_dist(x, y):
     """
     return ((x[0]-y[0])**2 + (x[1]-y[1])**2)**0.5
 
-def find_forwarder(fz, s, d, r, n, forward_zone): 
+def find_forwarder(s, d, r, coord, forward_zone): 
     """
     Find the forwarder node
     """
     forwarder_list = []
     forwarder_node = ""
     for i in coord: 
-        # add forward zone condition
-        # check if i falls in FZ (the remaining condition)
-        if calc_dist(s, i) <= r and (calc_dist(i, d) < calc_dist(s, d)) and is_inside_polygon(forward_zone, i):
+        if inside_polygon(forward_zone, i) and calc_dist(i, d) < calc_dist(s, d): 
+            print("This is good")
+        # calc_dist(s, i) causing problems
+        if calc_dist(s, i) <= r and (calc_dist(i, d) < calc_dist(s, d)) and inside_polygon(forward_zone, i):
             forwarder_list.append(i)
     if d in forwarder_list or len(forwarder_list) == 0:
         forwarder_node = d
     else: 
+        # this case is not getting called
         forwarder_node = random.choice(forwarder_list)
     return forwarder_node
 
-def chromosome_form(s, d, fz, r, n, forward_zone):
+def chromosome_form(s, d, r, coord, forward_zone):
     """
     Generate a path for transmission of signal
     """
     chromosome = []
     chromosome.append(s)
     while s != d: 
-        c2 = find_forwarder(fz, s, d, r, n, forward_zone)
+        c2 = find_forwarder(s, d, r, coord, forward_zone)
         chromosome.append(c2)
         s = c2
     return chromosome
 
-def population_form(s, d, fz, r, n, p, forward_zone):
+def population_form(s, d, r, coord, p, forward_zone):
     """
     Generate a population of paths
     """
     population = []
     for i in range(p):
-        population.append(chromosome_form(s, d, fz, r, n, forward_zone))
+        population.append(chromosome_form(s, d, r, coord, forward_zone))
     return population
 
 
 if __name__ == "__main__": 
-    n = 50
+    n = 80
     s = [1, 3]
-    d = [7, 8]
+    d = [56, 78]
     r = 2
     coord = []
     while True:
@@ -99,7 +95,7 @@ if __name__ == "__main__":
         else:
             pass
     forward_zone = point_of_intersection(r, s, d)
-    forwarder = find_forwarder({1,2,3,4,5}, s, d, r, coord, forward_zone)
-    # print(find_forwarder({1,2,3,4,5}, s, d, r, coord))
-    population = population_form(s, d, {1,2,3,4,5}, r, coord, 10, forward_zone)
-
+    forwarder = find_forwarder(s, d, r, coord, forward_zone)
+    chromosome_path = chromosome_form(s, d, r, coord, forward_zone)
+    population = population_form(s, d, r, coord, 10, forward_zone)
+    print(chromosome_path)
