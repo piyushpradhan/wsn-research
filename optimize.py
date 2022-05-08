@@ -21,8 +21,8 @@
 # PSD Probability of success delivery
 
 import random
-from wrt_polygon import *
 from forward_zone_coord import *
+from plotting import *
 
 def gen_coord(s, d): 
     """
@@ -42,7 +42,7 @@ def gen_coord(s, d):
 
     x = random.uniform(smallest_x, greatest_x)
     y = random.uniform(smallest_y, greatest_y)
-    return (int(x), int(y))
+    return (int(x), int(y))    
 
 def calc_dist(x, y): 
     """
@@ -98,11 +98,17 @@ def crossover(c1, c2):
         c1[i], c2[i] = c2[i], c1[i]
     return c1, c2
 
+def calc_fitness(population, s, d, r, coord, forward_zone):
+    """
+    Calculate the fitness of each path
+    """
+    
+
 if __name__ == "__main__": 
     n = 80
-    s = (1, 3)
+    s = (5, 8)
     d = (23, 32)
-    r = 10
+    r = 4
     coord = []
     while True:
         if len(coord) == n: 
@@ -123,4 +129,5 @@ if __name__ == "__main__":
     print(first_child)
     print("Second child: ")
     print(second_child)
+    node_simulation(coord, s, d, r)
     
