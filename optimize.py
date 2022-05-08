@@ -86,12 +86,23 @@ def population_form(s, d, r, coord, p, forward_zone):
         population.append(chromosome_form(s, d, r, coord, forward_zone))
     return population
 
+def crossover(c1, c2):
+    """
+    Function to perform single point crossover
+    """
+    common_min = min(len(c1), len(c2))
+    k = random.randint(0, common_min)
+      
+    # interchanging the genes
+    for i in range(k, common_min):
+        c1[i], c2[i] = c2[i], c1[i]
+    return c1, c2
 
 if __name__ == "__main__": 
     n = 80
     s = (1, 3)
     d = (23, 32)
-    r = 20
+    r = 10
     coord = []
     while True:
         if len(coord) == n: 
@@ -107,3 +118,9 @@ if __name__ == "__main__":
     print("The initial population generated: ")
     for p in population:
         print(p)
+    first_child, second_child = crossover(population[0], population[1])
+    print("First child: ")
+    print(first_child)
+    print("Second child: ")
+    print(second_child)
+    
