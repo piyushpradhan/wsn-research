@@ -15,6 +15,7 @@ def node_simulation(coord, s, d, r):
 
     plt.ylim((0, 50))
     plt.xlim((0, 50))
+    plt.scatter(x_axis, y_axis)
     source = plt.Circle(s, r, fill=False)
     destination = plt.Circle(d, r, fill=False)
     axes.set_aspect(1)

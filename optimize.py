@@ -20,6 +20,9 @@
 # φ Density of sensors 
 # PSD Probability of success delivery
 
+import sys
+
+from multiprocessing import pool
 import random
 from forward_zone_coord import *
 from plotting import *
@@ -96,13 +99,30 @@ def crossover(c1, c2):
     # interchanging the genes
     for i in range(k, common_min):
         c1[i], c2[i] = c2[i], c1[i]
-    return c1, c2
+    children = [c1, c2]
+    return children
 
-def calc_fitness(population, s, d, r, coord, forward_zone):
+def calc_fitness(path):
     """
     Calculate the fitness of each path
     """
+    # energy dissipated to run the transmitter
+    elec = 50
+    # energy required to for transmit amplifier
+    amp = 100
+    # value usually lies between the range of 2 to 4
+    phi = 2
+    # bits of data to be trasnferred
+    k = 512
+    # number of links along the route from S to D
+    hc = len(path) - 1
+    total_energy = 0
     
+    for i in range(len(path) - 1):
+        current_energy = (2 * elec * amp * (calc_dist(path[i], path[i + 1]) ** phi)) * k * hc
+        total_energy = total_energy + current_energy
+    
+    return total_energy
 
 if __name__ == "__main__": 
     n = 80
@@ -120,14 +140,34 @@ if __name__ == "__main__":
             pass
     forward_zone = point_of_intersection(r, s, d)
     chromosome_path = chromosome_form(s, d, r, coord, forward_zone)
-    population = population_form(s, d, r, coord, 10, forward_zone)
-    print("The initial population generated: ")
-    for p in population:
-        print(p)
-    first_child, second_child = crossover(population[0], population[1])
-    print("First child: ")
-    print(first_child)
-    print("Second child: ")
-    print(second_child)
-    node_simulation(coord, s, d, r)
+    population = population_form(s, d, r, coord, 2, forward_zone)
+    offspring = population
+    all_offsprings = [offspring]
+    fitness_values = []
+    gen_lowest = sys.maxsize
+    gen_count = 0
+    for gen in range(10):
+        # print("Generation: ", gen)
+        # print("The fitness values are: ", end="")
+        population_lowest = sys.maxsize
+        population_count = 0
+        for i in range(len(offspring)): 
+            # proves that the fitness values actually are different
+            # print("path: ", offspring[i], " fitness: ", calc_fitness(offspring[i]), end="\n")
+            fitness_values.append(calc_fitness(offspring[i]))
+            if fitness_values[len(fitness_values) - 1] < population_lowest: 
+                population_count = i
+                population_lowest = fitness_values[len(fitness_values) - 1]
+            
+        # print(fitness_values)
+        # print("The lowest fitness value of population is: ", population_lowest)
+        if population_lowest < gen_lowest:
+            gen_count = gen
+            population_count = i
+            gen_lowest = population_lowest
+        offspring = crossover(offspring[0], offspring[1])
+        all_offsprings.append(offspring)
+    print("The lowest fitness value (overall) is: ", gen_lowest, "from: ", gen_count, " generation's ", population_count, " population")
+
+    # node_simulation(coord, s, d, r)
     
