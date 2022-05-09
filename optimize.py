@@ -107,7 +107,7 @@ def crossover(c1, c2):
 
 def calc_fitness(path):
     """
-    Calculate the fitness of each path
+    Calculate and return the fitness of each path
     """
     # energy dissipated to run the transmitter
     elec = 50
@@ -141,9 +141,13 @@ if __name__ == "__main__":
             coord.append(gen_coord(s, d))
         else:
             pass
+    # defines the forward zone
     forward_zone = point_of_intersection(r, s, d)
+    # one of the possilble paths to go from S to D
     chromosome_path = chromosome_form(s, d, r, coord, forward_zone)
+    # generate the initial population for crossover
     population = population_form(s, d, r, coord, 2, forward_zone)
+    
     offspring = population
     chosen_path = []
     gen_lowest = sys.maxsize
