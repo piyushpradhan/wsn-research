@@ -60,6 +60,7 @@ def find_forwarder(s, d, r, coord, forward_zone):
     forwarder_list = []
     forwarder_node = ()
     for i in coord: 
+        # the condition for finding the next best node for the path
         if calc_dist(s, i) <= r and (calc_dist(i, d) < calc_dist(s, d)) and inside_polygon(forward_zone, i):
             forwarder_list.append(i)
     if d in forwarder_list or len(forwarder_list) == 0: 
@@ -74,6 +75,8 @@ def chromosome_form(s, d, r, coord, forward_zone):
     """
     chromosome = []
     chromosome.append(s)
+    # creating a path
+    # adding nodes to an array (the path) till the destination node is reached
     while s != d: 
         c2 = find_forwarder(s, d, r, coord, forward_zone)
         chromosome.append(c2)
@@ -180,5 +183,5 @@ if __name__ == "__main__":
     print(f"The chosen path: {chosen_path}")
     print(f"Fitness value of chosen path: {calc_fitness(chosen_path)}")
 
-    node_simulation(coord, s, d, r, chosen_path)
+    # node_simulation(coord, s, d, r, chosen_path)
     
