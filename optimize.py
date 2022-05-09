@@ -142,32 +142,43 @@ if __name__ == "__main__":
     chromosome_path = chromosome_form(s, d, r, coord, forward_zone)
     population = population_form(s, d, r, coord, 2, forward_zone)
     offspring = population
-    all_offsprings = [offspring]
-    fitness_values = []
+    chosen_path = []
     gen_lowest = sys.maxsize
     gen_count = 0
+    final_population_count = 0
+    
     for gen in range(10):
         # print("Generation: ", gen)
         # print("The fitness values are: ", end="")
         population_lowest = sys.maxsize
         population_count = 0
+        pop_chosen_path = []
         for i in range(len(offspring)): 
             # proves that the fitness values actually are different
             # print("path: ", offspring[i], " fitness: ", calc_fitness(offspring[i]), end="\n")
-            fitness_values.append(calc_fitness(offspring[i]))
-            if fitness_values[len(fitness_values) - 1] < population_lowest: 
+            fitness_value = calc_fitness(offspring[i])
+            if fitness_value < population_lowest: 
                 population_count = i
-                population_lowest = fitness_values[len(fitness_values) - 1]
+                population_lowest = fitness_value
+                pop_chosen_path = offspring[i]
+                # print(f"Lowest in {gen} generation: {i} population -> {gen_count}:{population_count}")
             
         # print(fitness_values)
         # print("The lowest fitness value of population is: ", population_lowest)
         if population_lowest < gen_lowest:
             gen_count = gen
-            population_count = i
+            final_population_count = population_count
             gen_lowest = population_lowest
+            chosen_path = pop_chosen_path
+            # print(f"Chosen path so far: {chosen_path}")
+            # print(f"Lowest so far : {gen_count}:{population_count}")
+            # print(f"Lowest fitness value so far: {gen_lowest}")
+        
         offspring = crossover(offspring[0], offspring[1])
-        all_offsprings.append(offspring)
-    print("The lowest fitness value (overall) is: ", gen_lowest, "from: ", gen_count, " generation's ", population_count, " population")
+        
+    print("The lowest fitness value (overall) is: ", gen_lowest, "from: ", gen_count, " generation's ", final_population_count, " population")
+    print(f"The chosen path: {chosen_path}")
+    print(f"Fitness value of chosen path: {calc_fitness(chosen_path)}")
 
-    # node_simulation(coord, s, d, r)
+    node_simulation(coord, s, d, r, chosen_path)
     
