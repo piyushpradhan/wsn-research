@@ -21,9 +21,11 @@
 # PSD Probability of success delivery
 
 import sys
+from math import e, factorial
 
-from multiprocessing import pool
 import random
+
+from torch import randint
 from forward_zone_coord import *
 from plotting import *
 
@@ -53,6 +55,16 @@ def calc_dist(x, y):
     """
     return ((x[0]-y[0])**2 + (x[1]-y[1])**2)**0.5
 
+def count_nodes_inside_forward_zone(coord, forward_zone):
+    """
+    Return the number of nodes inside the forward zone
+    """
+    count = 0
+    for i in range(len(coord)): 
+        if inside_polygon(forward_zone, coord[i]):
+            count = count + 1
+    return count
+
 def find_forwarder(s, d, r, coord, forward_zone): 
     """
     Find the forwarder node
@@ -63,7 +75,7 @@ def find_forwarder(s, d, r, coord, forward_zone):
         # the condition for finding the next best node for the path
         if calc_dist(s, i) <= r and (calc_dist(i, d) < calc_dist(s, d)) and inside_polygon(forward_zone, i):
             forwarder_list.append(i)
-    if d in forwarder_list or len(forwarder_list) == 0: 
+    if d in forwarder_list or len(forwarder_list) == 0:
         forwarder_node = d
     else: 
         forwarder_node = random.choice(forwarder_list)
@@ -79,6 +91,8 @@ def chromosome_form(s, d, r, coord, forward_zone):
     # adding nodes to an array (the path) till the destination node is reached
     while s != d: 
         c2 = find_forwarder(s, d, r, coord, forward_zone)
+        if c2 == ():
+            break
         chromosome.append(c2)
         s = c2
     return chromosome
@@ -89,20 +103,37 @@ def population_form(s, d, r, coord, p, forward_zone):
     """
     population = []
     for i in range(p):
-        population.append(chromosome_form(s, d, r, coord, forward_zone))
+        path = chromosome_form(s, d, r, coord, forward_zone)
+        in_range = calc_dist(path[-2], d) <= r
+        if in_range == False:
+            return False
+        else: 
+            population.append(path)
+
     return population
 
-def crossover(c1, c2):
-    """
-    Function to perform single point crossover
-    """
-    common_min = min(len(c1), len(c2))
-    k = random.randint(0, common_min)
+# def crossover(c1, c2):
+#     """
+#     Function to perform single point crossover
+#     """
+#     common_min = min(len(c1), len(c2))
+#     k = random.randint(0, common_min)
       
-    # interchanging the genes
-    for i in range(k, common_min):
-        c1[i], c2[i] = c2[i], c1[i]
-    children = [c1, c2]
+#     # interchanging the genes
+#     for i in range(k, common_min):
+#         c1[i], c2[i] = c2[i], c1[i]
+#     children = [c1, c2]
+#     return children
+
+def crossover(c1, c2):
+    if len(c1) != len(c2):
+        return [c1, c2]
+    length = len(c1)
+    if length < 2:
+        return [c1, c2]
+
+    p = randint(1, length - 1)
+    children = [c1[0:p] + c2[p:], c2[0:p] + c1[p:]]
     return children
 
 def calc_fitness(path):
@@ -127,8 +158,17 @@ def calc_fitness(path):
     
     return total_energy
 
-if __name__ == "__main__": 
-    n = 80
+def forward_zone_probability(n, r, d):
+    """
+    Calculate and return the probability of n nodes in forward zone
+    """
+    phi = 2 
+    area = 2 * r * d
+    probability = ((phi * area) ** 34) / (factorial(n) * (phi ** n))
+    return probability
+
+def run_simulation(): 
+    n = 200
     s = (5, 8)
     d = (23, 32)
     r = 4
@@ -146,8 +186,30 @@ if __name__ == "__main__":
     # one of the possilble paths to go from S to D
     chromosome_path = chromosome_form(s, d, r, coord, forward_zone)
     # generate the initial population for crossover
-    population = population_form(s, d, r, coord, 2, forward_zone)
+    population = population_form(s, d, r, coord, 60, forward_zone)
+    while(population == False):
+        print(population)
+        population = population_form(s, d, r, coord, 60, forward_zone)
+
+    # count the number of nodes inside the forward zone
+    count = count_nodes_inside_forward_zone(coord, forward_zone)
+    # calculate the probability of n nodes in forward zone
+    probability_fz = forward_zone_probability(count, r, calc_dist(s, d))
+    print(f"Probability of {count} nodes lying inside forward zone: {probability_fz}")
+    print(int(probability_fz))
+
+    optimal = []
+    optimal_fitness = sys.maxsize
+    for i in range(len(population)):
+        fitness_value = calc_fitness(population[i])
+        if fitness_value < optimal_fitness: 
+            optimal_fitness = fitness_value
+            optimal = population[i]
     
+    print(optimal)
+    node_simulation(coord, s, d, r, optimal)
+    
+    # Create simulation with crossover operation
     offspring = population
     chosen_path = []
     gen_lowest = sys.maxsize
@@ -183,9 +245,10 @@ if __name__ == "__main__":
         
         offspring = crossover(offspring[0], offspring[1])
         
-    print("The lowest fitness value (overall) is: ", gen_lowest, "from: ", gen_count, " generation's ", final_population_count, " population")
-    print(f"The chosen path: {chosen_path}")
-    print(f"Fitness value of chosen path: {calc_fitness(chosen_path)}")
+    # print("The lowest fitness value (overall) is: ", gen_lowest, "from: ", gen_count, " generation's ", final_population_count, " population")
+    # print(f"The chosen path: {chosen_path}")
+    # print(f"Fitness value of chosen path: {calc_fitness(chosen_path)}")
 
     # node_simulation(coord, s, d, r, chosen_path)
     
+run_simulation()
