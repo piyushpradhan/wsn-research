@@ -49,6 +49,21 @@ def gen_coord(s, d):
     y = random.uniform(smallest_y, greatest_y)
     return (int(x), int(y))    
 
+def gen_random_coords(s, d, n):
+    """
+    Compiles the randomly generated coordinates
+    """
+    coord = []
+    while True:
+        if len(coord) == n: 
+            break
+        new_coord = gen_coord(s, d)
+        if new_coord not in coord:
+            coord.append(gen_coord(s, d))
+        else:
+            pass
+    return coord
+
 def calc_dist(x, y): 
     """
     Calculate the distance between two sensor nodes
@@ -126,6 +141,9 @@ def population_form(s, d, r, coord, p, forward_zone):
 #     return children
 
 def crossover(c1, c2):
+    """
+    Perform single point crossover operation
+    """
     if len(c1) != len(c2):
         return [c1, c2]
     length = len(c1)
@@ -172,15 +190,8 @@ def run_simulation():
     s = (5, 8)
     d = (23, 32)
     r = 4
-    coord = []
-    while True:
-        if len(coord) == n: 
-            break
-        new_coord = gen_coord(s, d)
-        if new_coord not in coord:
-            coord.append(gen_coord(s, d))
-        else:
-            pass
+    coord = gen_random_coords(s, d, n)
+    
     # defines the forward zone
     forward_zone = point_of_intersection(r, s, d)
     # one of the possilble paths to go from S to D
@@ -188,7 +199,7 @@ def run_simulation():
     # generate the initial population for crossover
     population = population_form(s, d, r, coord, 60, forward_zone)
     while(population == False):
-        print(population)
+        coord = gen_random_coords(s, d, n)
         population = population_form(s, d, r, coord, 60, forward_zone)
 
     # count the number of nodes inside the forward zone
