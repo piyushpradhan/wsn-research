@@ -150,7 +150,7 @@ def crossover(c1, c2):
     if length < 2:
         return [c1, c2]
 
-    p = randint(1, length - 1)
+    p = randint(low=1, high=length - 1)
     children = [c1[0:p] + c2[p:], c2[0:p] + c1[p:]]
     return children
 
@@ -204,10 +204,16 @@ def run_simulation():
 
     # count the number of nodes inside the forward zone
     count = count_nodes_inside_forward_zone(coord, forward_zone)
+
     # calculate the probability of n nodes in forward zone
+    p = []
     probability_fz = forward_zone_probability(count, r, calc_dist(s, d))
-    print(f"Probability of {count} nodes lying inside forward zone: {probability_fz}")
-    print(int(probability_fz))
+    print(f"Probability of {count} nodes lying inside forward zone: {probability_fz % e ** (-1)}")
+    for nodes in range(50):
+        prob = forward_zone_probability(nodes, r, calc_dist(s, d)) % e ** (-1)
+        p.append(prob)
+        print(prob)
+    # probability_simulation(p)
 
     optimal = []
     optimal_fitness = sys.maxsize
@@ -218,7 +224,7 @@ def run_simulation():
             optimal = population[i]
     
     print(optimal)
-    node_simulation(coord, s, d, r, optimal)
+    node_simulation(coord, s, d, r, optimal, population)
     
     # Create simulation with crossover operation
     offspring = population
