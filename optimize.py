@@ -127,33 +127,6 @@ def population_form(s, d, r, coord, p, forward_zone):
 
     return population
 
-# def crossover(c1, c2):
-#     """
-#     Function to perform single point crossover
-#     """
-#     common_min = min(len(c1), len(c2))
-#     k = random.randint(0, common_min)
-      
-#     # interchanging the genes
-#     for i in range(k, common_min):
-#         c1[i], c2[i] = c2[i], c1[i]
-#     children = [c1, c2]
-#     return children
-
-def crossover(c1, c2):
-    """
-    Perform single point crossover operation
-    """
-    if len(c1) != len(c2):
-        return [c1, c2]
-    length = len(c1)
-    if length < 2:
-        return [c1, c2]
-
-    p = randint(low=1, high=length - 1)
-    children = [c1[0:p] + c2[p:], c2[0:p] + c1[p:]]
-    return children
-
 def calc_fitness(path):
     """
     Calculate and return the fitness of each path
@@ -164,7 +137,7 @@ def calc_fitness(path):
     amp = 100
     # value usually lies between the range of 2 to 4
     phi = 2
-    # bits of data to be trasnferred
+    # bits of data to be transferred
     k = 512
     # number of links along the route from S to D
     hc = len(path) - 1
@@ -208,11 +181,9 @@ def run_simulation():
     # calculate the probability of n nodes in forward zone
     p = []
     probability_fz = forward_zone_probability(count, r, calc_dist(s, d))
-    print(f"Probability of {count} nodes lying inside forward zone: {probability_fz % e ** (-1)}")
     for nodes in range(50):
         prob = forward_zone_probability(nodes, r, calc_dist(s, d)) % e ** (-1)
         p.append(prob)
-        print(prob)
     # probability_simulation(p)
 
     optimal = []
@@ -223,49 +194,8 @@ def run_simulation():
             optimal_fitness = fitness_value
             optimal = population[i]
     
+    print("The optimal path:")
     print(optimal)
     node_simulation(coord, s, d, r, optimal, population)
-    
-    # Create simulation with crossover operation
-    offspring = population
-    chosen_path = []
-    gen_lowest = sys.maxsize
-    gen_count = 0
-    final_population_count = 0
-    
-    for gen in range(10):
-        # print("Generation: ", gen)
-        # print("The fitness values are: ", end="")
-        population_lowest = sys.maxsize
-        population_count = 0
-        pop_chosen_path = []
-        for i in range(len(offspring)): 
-            # proves that the fitness values actually are different
-            # print("path: ", offspring[i], " fitness: ", calc_fitness(offspring[i]), end="\n")
-            fitness_value = calc_fitness(offspring[i])
-            if fitness_value < population_lowest: 
-                population_count = i
-                population_lowest = fitness_value
-                pop_chosen_path = offspring[i]
-                # print(f"Lowest in {gen} generation: {i} population -> {gen_count}:{population_count}")
-            
-        # print(fitness_values)
-        # print("The lowest fitness value of population is: ", population_lowest)
-        if population_lowest < gen_lowest:
-            gen_count = gen
-            final_population_count = population_count
-            gen_lowest = population_lowest
-            chosen_path = pop_chosen_path
-            # print(f"Chosen path so far: {chosen_path}")
-            # print(f"Lowest so far : {gen_count}:{population_count}")
-            # print(f"Lowest fitness value so far: {gen_lowest}")
-        
-        offspring = crossover(offspring[0], offspring[1])
-        
-    # print("The lowest fitness value (overall) is: ", gen_lowest, "from: ", gen_count, " generation's ", final_population_count, " population")
-    # print(f"The chosen path: {chosen_path}")
-    # print(f"Fitness value of chosen path: {calc_fitness(chosen_path)}")
-
-    # node_simulation(coord, s, d, r, chosen_path)
     
 run_simulation()

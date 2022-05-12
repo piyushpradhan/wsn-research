@@ -13,6 +13,8 @@ def node_simulation(coord, s, d, r, chosen_path, population):
             y_path.append(i[1])
         return x_path, y_path
         
+    plt.xlim = max(s[0], d[0])
+    plt.ylim = max(s[1], d[1])
 
     x_axis = [s[0]]
     y_axis = [s[1]]
@@ -26,7 +28,7 @@ def node_simulation(coord, s, d, r, chosen_path, population):
     x_path, y_path = each_line_plot(chosen_path)
     
     # plotting the position of nodes
-    plt.scatter(x_axis, y_axis)
+    plt.scatter(x_axis, y_axis, s=10)
 
     # plotting the optimal path
     plt.plot(x_path, y_path, color='red', linewidth=2.0)
