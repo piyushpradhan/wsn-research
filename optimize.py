@@ -185,6 +185,7 @@ def run_simulation():
     
     print("The optimal path:")
     print(optimal)
-    node_simulation(coord, s, d, r, optimal, population)
+    node_simulation(coord, s, d, r, optimal, population, forward_zone)
+    # forward_zone_simulation(coord, s, d, r, forward_zone)
     
 run_simulation()
