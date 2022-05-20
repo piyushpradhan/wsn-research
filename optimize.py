@@ -175,17 +175,6 @@ def run_simulation():
         coord = gen_random_coords(s, d, n)
         population = population_form(s, d, r, coord, 60, forward_zone)
 
-    # count the number of nodes inside the forward zone
-    count = count_nodes_inside_forward_zone(coord, forward_zone)
-
-    # calculate the probability of n nodes in forward zone
-    p = []
-    probability_fz = forward_zone_probability(count, r, calc_dist(s, d))
-    for nodes in range(50):
-        prob = forward_zone_probability(nodes, r, calc_dist(s, d)) % e ** (-1)
-        p.append(prob)
-    # probability_simulation(p)
-
     optimal = []
     optimal_fitness = sys.maxsize
     for i in range(len(population)):
